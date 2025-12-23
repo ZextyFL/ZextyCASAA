@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pawn Manager — Beleningen</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <span class="navbar-brand fw-semibold">Pawn Manager</span>
+    <span class="navbar-text text-secondary">Beleningen administratie</span>
+  </div>
+</nav>
+
+<main class="container my-4">
+  <div class="row g-3">
+    <div class="col-lg-5">
+      <div class="card shadow-sm">
+        <div class="card-header fw-semibold">Nieuwe belening</div>
+        <div class="card-body">
+          <form id="createForm" class="row g-2">
+            <div class="col-12">
+              <label class="form-label">Klant naam *</label>
+              <input class="form-control" name="full_name" required>
+            </div>
+
+            <div class="col-6">
+              <label class="form-label">ID type *</label>
+              <select class="form-select" name="id_type" required>
+                <option value="ID">ID</option>
+                <option value="PASSPORT">Paspoort</option>
+                <option value="DRIVER_LICENSE">Rijbewijs</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">ID nummer *</label>
+              <input class="form-control" name="id_number" required>
+            </div>
+
+            <div class="col-6">
+              <label class="form-label">Telefoon</label>
+              <input class="form-control" name="phone">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Adres</label>
+              <input class="form-control" name="address">
+            </div>
+
+            <hr class="my-2">
+
+            <div class="col-6">
+              <label class="form-label">Contract nr *</label>
+              <input class="form-control" name="contract_no" placeholder="BV-2025-0001" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Rente %</label>
+              <input class="form-control" name="interest_pct" type="number" step="0.01" value="0">
+            </div>
+
+            <div class="col-6">
+              <label class="form-label">Start datum *</label>
+              <input class="form-control" name="start_date" type="date" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Verval datum *</label>
+              <input class="form-control" name="due_date" type="date" required>
+            </div>
+
+            <div class="col-4">
+              <label class="form-label">Bedrag (SRD)</label>
+              <input class="form-control" name="amount_srd" type="number" step="0.01" value="0">
+            </div>
+            <div class="col-4">
+              <label class="form-label">Bedrag (EUR)</label>
+              <input class="form-control" name="amount_eur" type="number" step="0.01" value="0">
+            </div>
+            <div class="col-4">
+              <label class="form-label">Bedrag (USD)</label>
+              <input class="form-control" name="amount_usd" type="number" step="0.01" value="0">
+            </div>
+
+            <div class="col-4">
+              <label class="form-label">Kosten (SRD)</label>
+              <input class="form-control" name="fees_srd" type="number" step="0.01" value="0">
+            </div>
+            <div class="col-4">
+              <label class="form-label">Kosten (EUR)</label>
+              <input class="form-control" name="fees_eur" type="number" step="0.01" value="0">
+            </div>
+            <div class="col-4">
+              <label class="form-label">Kosten (USD)</label>
+              <input class="form-control" name="fees_usd" type="number" step="0.01" value="0">
+            </div>
+
+            <hr class="my-2">
+
+            <div class="col-6">
+              <label class="form-label">Item categorie *</label>
+              <select class="form-select" name="item_category" required>
+                <option value="GOLD">Goud</option>
+                <option value="JEWELRY">Sieraden</option>
+                <option value="ELECTRONICS">Elektronica</option>
+                <option value="OTHER">Overig</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Serienummer</label>
+              <input class="form-control" name="serial_no">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Item omschrijving *</label>
+              <input class="form-control" name="item_description" placeholder="bv. Gouden ring, 18K" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Gewicht (gram)</label>
+              <input class="form-control" name="weight_g" type="number" step="0.001">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Karaat / Puurheid</label>
+              <input class="form-control" name="purity" placeholder="24K / 18K / 750">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Notities</label>
+              <textarea class="form-control" name="notes" rows="2"></textarea>
+            </div>
+
+            <div class="col-12 d-grid mt-2">
+              <button class="btn btn-primary" type="submit">Opslaan</button>
+            </div>
+            <div class="col-12">
+              <div id="createMsg" class="small mt-2"></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex align-items-center gap-2">
+          <div class="fw-semibold me-auto">Beleningen</div>
+          <input id="search" class="form-control form-control-sm" style="max-width: 320px"
+                 placeholder="Zoek: naam, ID, contract...">
+          <button id="refresh" class="btn btn-sm btn-outline-secondary">Ververs</button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm align-middle">
+              <thead>
+                <tr>
+                  <th>Contract</th>
+                  <th>Klant</th>
+                  <th>Status</th>
+                  <th>Verval</th>
+                  <th class="text-end">SRD</th>
+                  <th class="text-end">EUR</th>
+                  <th class="text-end">USD</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+          <div class="text-secondary small">Tip: klik “Details” om item + klantinfo te zien.</div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mt-3">
+        <div class="card-header fw-semibold">Details</div>
+        <div class="card-body" id="details">
+          <div class="text-secondary">Selecteer een contract...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const rowsEl = document.getElementById('rows');
+const detailsEl = document.getElementById('details');
+const searchEl = document.getElementById('search');
+const msgEl = document.getElementById('createMsg');
+
+async function api(url, method='GET', body=null) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+function money(n){ return (Number(n)||0).toLocaleString('nl-NL', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+async function loadList() {
+  const q = encodeURIComponent(searchEl.value.trim());
+  const data = await api(`api.php?action=list&search=${q}`);
+  rowsEl.innerHTML = data.rows.map(r => `
+    <tr>
+      <td class="fw-semibold">${r.contract_no}</td>
+      <td>
+        <div>${r.full_name}</div>
+        <div class="text-secondary small">${r.id_type} • ${r.id_number}</div>
+      </td>
+      <td><span class="badge text-bg-${badge(r.status)}">${r.status}</span></td>
+      <td>${r.due_date}</td>
+      <td class="text-end">${money(r.amount_srd)}</td>
+      <td class="text-end">${money(r.amount_eur)}</td>
+      <td class="text-end">${money(r.amount_usd)}</td>
+      <td class="text-end">
+        <button class="btn btn-sm btn-outline-primary" onclick="showDetails(${r.id})">Details</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function badge(status){
+  if(status==='OPEN') return 'primary';
+  if(status==='REDEEMED') return 'success';
+  if(status==='EXPIRED') return 'warning';
+  if(status==='SOLD') return 'dark';
+  return 'secondary';
+}
+
+async function showDetails(id) {
+  const data = await api(`api.php?action=details&id=${id}`);
+  const p = data.pawn;
+  const items = data.items || [];
+
+  detailsEl.innerHTML = `
+    <div class="row g-2">
+      <div class="col-md-7">
+        <div class="h5 mb-1">${p.contract_no} <span class="badge text-bg-${badge(p.status)}">${p.status}</span></div>
+        <div class="text-secondary">${p.full_name} • ${p.id_type} ${p.id_number}</div>
+        <div class="small text-secondary">${p.phone || ''} ${p.address ? '• ' + p.address : ''}</div>
+      </div>
+      <div class="col-md-5">
+        <div class="small">
+          <div><b>Start:</b> ${p.start_date}</div>
+          <div><b>Verval:</b> ${p.due_date}</div>
+          <div><b>Rente:</b> ${p.interest_pct}%</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="row g-2">
+      <div class="col-md-4"><b>SRD</b><div>${money(p.amount_srd)} + kosten ${money(p.fees_srd)}</div></div>
+      <div class="col-md-4"><b>EUR</b><div>${money(p.amount_eur)} + kosten ${money(p.fees_eur)}</div></div>
+      <div class="col-md-4"><b>USD</b><div>${money(p.amount_usd)} + kosten ${money(p.fees_usd)}</div></div>
+    </div>
+
+    ${p.notes ? `<div class="mt-3"><b>Notities:</b><div class="text-secondary">${escapeHtml(p.notes)}</div></div>` : ''}
+
+    <hr>
+
+    <div class="fw-semibold mb-2">Items</div>
+    ${items.map(i => `
+      <div class="border rounded p-2 mb-2">
+        <div class="d-flex justify-content-between">
+          <div><b>${i.category}</b> — ${escapeHtml(i.description)}</div>
+          <div class="text-secondary small">#${i.id}</div>
+        </div>
+        <div class="text-secondary small">
+          ${i.serial_no ? `Serial: ${escapeHtml(i.serial_no)} • ` : ''}
+          ${i.weight_g ? `Gewicht: ${i.weight_g}g • ` : ''}
+          ${i.purity ? `Puurheid: ${escapeHtml(i.purity)}` : ''}
+        </div>
+      </div>
+    `).join('')}
+
+    <div class="mt-3 d-flex gap-2">
+      <button class="btn btn-sm btn-success" onclick="setStatus(${p.id}, 'REDEEMED')">Markeer als Ingelost</button>
+      <button class="btn btn-sm btn-warning" onclick="setStatus(${p.id}, 'EXPIRED')">Markeer als Verlopen</button>
+      <button class="btn btn-sm btn-dark" onclick="setStatus(${p.id}, 'SOLD')">Markeer als Verkocht</button>
+      <button class="btn btn-sm btn-outline-secondary" onclick="setStatus(${p.id}, 'OPEN')">Terug naar Open</button>
+    </div>
+  `;
+}
+
+function escapeHtml(s){
+  return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+}
+
+async function setStatus(id, status){
+  await api(`api.php?action=update_status`, 'POST', {id, status});
+  await loadList();
+  await showDetails(id);
+}
+
+document.getElementById('refresh').addEventListener('click', loadList);
+searchEl.addEventListener('input', () => {
+  clearTimeout(window._t);
+  window._t = setTimeout(loadList, 250);
+});
+
+document.getElementById('createForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  msgEl.textContent = '';
+  msgEl.className = 'small mt-2';
+
+  const fd = new FormData(e.target);
+  const obj = Object.fromEntries(fd.entries());
+
+  try {
+    const out = await api('api.php?action=create', 'POST', obj);
+    msgEl.textContent = 'Opgeslagen! Pawn ID: ' + out.pawn_id;
+    msgEl.classList.add('text-success');
+    e.target.reset();
+    await loadList();
+  } catch (err) {
+    msgEl.textContent = err.message;
+    msgEl.classList.add('text-danger');
+  }
+});
+
+// initial load
+loadList();
+</script>
+
+</body>
+</html>
